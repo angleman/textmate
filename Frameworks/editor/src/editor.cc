@@ -254,6 +254,7 @@ namespace ng
 
 			std::string const pad = orgRange.freehanded && orgRange.first.carry ? std::string(orgRange.first.carry, ' ') : "";
 			orgRange.first.carry = orgRange.last.carry = 0;
+			ng::range_t original(orgRange.first.index, orgRange.last.index);
 
 			std::vector< std::pair<range_t, std::string> > const& real = snippets.replace(orgRange.first.index, orgRange.last.index, pad + p1->second);
 			iterate(p2, real)
@@ -263,8 +264,11 @@ namespace ng
 
 				size_t from = range.first.index + adjustment, to = range.last.index + adjustment;
 				size_t caret = buffer.replace(from, to, str);
-				if(range == ng::range_t(orgRange.first.index, orgRange.last.index))
+				if(range == original)
+				{
 					res.push_back(range_t(from + pad.size(), caret, false, orgRange.freehanded, true));
+					original = ng::range_t();
+				}
 				adjustment += str.size() - (to - from);
 			}
 		}
